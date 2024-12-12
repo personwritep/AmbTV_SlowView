@@ -1,0 +1,163 @@
+// ==UserScript==
+// @name         AmbTV SlowView
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  AbemaTV ユーティリティ
+// @author       Ameba User
+// @match        https://abema.tv/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=abema.tv
+// @grant        none
+// ==/UserScript==
+
+
+
+if(window.location.search!='?atv'){ // 通常の画面
+    let target=document.querySelector('head > title');
+    let monitor=new MutationObserver(player_env);
+    monitor.observe(target, { childList: true });
+}
+
+
+
+function player_env(){
+    let retry0=0;
+    let interval0=setInterval(wait_target0, 20);
+    function wait_target0(){
+        retry0++;
+        if(retry0>100){ // リトライ制限 100回 2secまで
+            clearInterval(interval0); }
+        let player=document.querySelector(
+            '.com-vod-VODRecommendedContentsContainerView__player');
+        if(player){
+            clearInterval(interval0);
+            set_player(player); }}
+
+
+
+    function set_player(player){
+
+        let style=
+            '<style class="atv_style">'+
+            '.c-common-HeaderContainer-header, '+
+            '.c-application-SideNavigation, '+
+            '.c-application-SideNavigation--collapsed, '+
+            '.com-vod-VODRecommendedContentsContainerView__player-aside-recommended'+
+            ' { display: none !important; } '+
+            '.c-video-EpisodeContainerView-breadcrumb, '+
+            '.com-vod-VODDetailsAccordion, '+
+            '.com-video-EpisodePlayerSection__header-action-buttons, '+
+            '.com-video-EpisodeTitleBlock__expire-text, '+
+            //        '.com-vod-VODRecommendedContentsContainerView__details, '+
+            '.com-vod-VODRecommendedContentsContainerView__episode-list, '+
+            '.com-feature-area-FeatureRecommendedArea__section, '+
+            '.c-video-EpisodeContainerView__page-bottom, '+
+            '.c-application-FooterContainer { display: none; } '+
+            // slots playrer
+            '.c-tv-TimeshiftSlotContainerView-breadcrumb, '+
+            '.c-tv-TimeshiftPlayerContainerView-comment-button, '+
+            '.c-tv-TimeshiftSlotContainerView-detail__action-buttons { display: none; } '+
+            '</style>'+
+
+            '<style class="atv_style_hide">'+
+            '.com-vod-VODScreen-container { cursor: none; } '+
+            '.com-vod-VideoControlBar, .com-vod-VODScreen__video-control-bg { '+
+            'display: none !important; } '+
+            '</style>'+
+
+            '<style class="atv_style_basic">'+
+            '.com-vod-VODScreen-container { background: #000 !important; } '+
+            '.com-playback-SeekBar__highlighter, .com-playback-SeekBar__marker, '+
+            '.com-a-Slider__highlighter { background-color: #2196f3 !important; } '+
+            '.com-vod-VODScreen__video-control-bg { '+
+            'height: 60px !important; background: rgba(0,0,0,0.5) !important; } '+
+            '.com-vod-VODScreen__recommend-content-bg { '+
+            'background-image: none !important; } '+
+            '.com-vod-VODPlayerNextContentRecommendBase__inner { '+
+            'padding: 10px; background: rgb(0 0 0 / 50%); } '+
+            '.com-video-EpisodePlayerSectionExternalContent { display: none; }'+ // 🟠 AD
+            '</style>';
+
+        if(!player.querySelector('.atv_style')){
+            player.insertAdjacentHTML('beforeend', style); }
+
+        let atv_style_hide=player.querySelector('.atv_style_hide'); // 🟩 コントロール非表示
+        if(atv_style_hide){
+            atv_style_hide.disabled=true; }
+
+
+
+        ad_block(player); // ADブロック
+
+
+
+        setTimeout(()=>{
+            player.oncontextmenu=function(){
+                hide_con(player); } // 🟩 動画面の右クリックでコントロールを非表示
+        }, 200);
+
+
+
+        setTimeout(()=>{
+            slow_play(player);
+        }, 600);
+
+    } // set_player()
+
+
+
+    function ad_block(player){
+        let retry2=0;
+        let interval2=setInterval(wait_target2, 20);
+        function wait_target2(){
+            retry2++;
+            if(retry2>100){ // リトライ制限 100回 2secまで
+                clearInterval(interval2); }
+            let ad_container=player.querySelector('#videoAdContainer > div');
+            if(ad_container){
+                clearInterval(interval2);
+                ad_container.remove(); }}}
+
+
+
+    function hide_con(player){
+        let atv_style_hide=player.querySelector('.atv_style_hide');
+        if(atv_style_hide){
+            if(atv_style_hide.disabled==true){
+                atv_style_hide.disabled=false; }
+            else{
+                atv_style_hide.disabled=true; }}}
+
+
+
+    function slow_play(player){
+        let VE=player.querySelector('.com-a-Video__video-element');
+        let PB=player.querySelector('.com-vod-PlaybackButton');
+        if(VE && PB){
+            let interval=setInterval(slow, 21)
+            let i=0;
+            function slow(){
+                i++;
+
+                if(i<22){
+                    pause(); }
+                else{
+                    play(); }
+
+                if(i==23){
+                    i=-1; }}
+
+
+            function pause(){
+                if(VE.hasAttribute('autoplay')){
+                    PB.click(); }}
+
+            function play(){
+                if(!VE.hasAttribute('autoplay')){
+                    PB.click(); }}
+        }
+    } // slow_play()
+
+
+} // player_env()
+
+
