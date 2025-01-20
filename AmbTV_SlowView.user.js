@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        AmbTV SlowView 🔲
+// @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
 // @version        0.5
 // @description        AbemaTV ユーティリティ
