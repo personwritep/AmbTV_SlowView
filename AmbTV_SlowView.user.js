@@ -20,6 +20,10 @@ monitor.observe(target, { childList: true });
 
 
 function player_env(){
+    let interval_s; // スロー実行のインターバル
+    let run=0; // スロー再生実行
+    let hide=0; // コントロールの非表示
+
     let sence=sessionStorage.getItem('ATV_SV_sence');
     if(!sence){
         sence=21;
@@ -35,11 +39,6 @@ function player_env(){
         cut=0;
         sessionStorage.setItem('ATV_SV_cut', cut); }
 
-
-    let interval_s; // スロー実行のインターバル
-    let run=0; // スロー再生実行
-    let hide=0; // コントロールの非表示
-    let arrange=1; // ページのアレンジ
 
     if(!location.pathname.includes('video/episode')){ // 書庫型動画プレーヤーのみ
         if(document.querySelector('#sv_panel')){
@@ -120,6 +119,11 @@ function player_env(){
         if(!player.querySelector('.atv_style_slow')){
             player.insertAdjacentHTML('beforeend', style); }
 
+        let atv_style_slow=player.querySelector('.atv_style_slow');
+        if(atv_style_slow){
+            atv_style_slow.disabled=false; }
+
+
 
         let style_hide=
             '<style class="atv_style_hide">'+
@@ -136,18 +140,24 @@ function player_env(){
             atv_style_hide.disabled=true; }
 
 
+
         let panel=
             '<div id="sv_panel">'+
+            '<input id="sv_w" type="button" value="Wide view">'+
+            '<input id="sv_h" type="button" value="Hide panel">　Space : slow-stop　'+
             'Sence <input id="sv_s" type="number" min="10" max="50" step="1">'+
             '　Speed <input id="sv_b" type="number" min="4" max="60" step="1">'+
             '　Cut-Line <input id="cutl" type="button" value="　">'+
             '　<span><a href="'+ help_url +'" target="_blank" rel="noopener noreferrer">'+
             SVG_h +'</a></span>'+
             '<style>'+
-            '#sv_panel { position: fixed; top: 10px; right: 160px; z-index: 2000; '+
-            'font: normal 16px/22px Meiryo; color: #fff; padding: 2px 12px; '+
+            '#sv_panel { position: fixed; top: 10px; left: calc(50% - 390px); z-index: 2000; '+
+            'font: normal 16px/22px Meiryo; color: #fff; padding: 2px 0 2px 12px; width: 780px; '+
             'border: 1px solid #aaa; background: #163850; user-select: none; } '+
-            '#sv_s, #sv_b { width: 65px; text-align: center; padding: 2px 6px 0; outline: none; } '+
+            '#sv_w, #sv_h { margin-right: 12px; padding: 1px 6px 0; height: 22px; color: #fff; '+
+            'border: none; border-radius: 2px; background: #008db9; cursor: pointer; } '+
+            '#sv_s, #sv_b { width: 54px; height: 26px; line-height: 20px; text-align: center; '+
+            'padding: 2px 2px 0 6px; outline: none; } '+
             '#cutl { height: 21px; width: 21px; border: none; border-radius: 2px; '+
             'background: #000; outline: 1px solid #666; cursor: pointer; } '+
             '.help_ATSV { vertical-align: -4px; fill: #ccc; }'+
@@ -178,7 +188,7 @@ function player_env(){
         ad_block(player); // ADブロック
 
 
-        player.oncontextmenu=function(e){
+        player.oncontextmenu=function(event){
             event.preventDefault();
             hide_con(player); } // 🟩 動画面の右クリックでコントロールを非表示
 
@@ -205,27 +215,43 @@ function player_env(){
                     slow_play(1); }
                 else{
                     slow_play(0); }}
-
-            if(event.keyCode==72){ //「H」キー　パネル表示/非表示
-                let sv_panel=document.querySelector('#sv_panel');
-                if(sv_panel){
-                    if(hide==0){
-                        hide=1;
-                        sv_panel.style.visibility='hidden'; }
-                    else{
-                        hide=0;
-                        sv_panel.style.visibility='visible'; }}}
-
             if(event.keyCode==87){ //「W」キー　ページアレンジ有効/無効
-                let atv_style_slow=player.querySelector('.atv_style_slow');
-                if(atv_style_slow){
-                    if(arrange==1){
-                        arrange=0;
-                        atv_style_slow.disabled=false; }
-                    else{
-                        arrange=1;
-                        atv_style_slow.disabled=true; }}}
+                wide_view(); }
+            if(event.keyCode==72){ //「H」キー　パネル表示/非表示
+                hide_panel(); }
         });
+
+
+        let sv_w=document.querySelector('#sv_w');
+        if(sv_w){
+            sv_w.onclick=()=>{
+                wide_view(); }}
+
+
+        let sv_h=document.querySelector('#sv_h');
+        if(sv_h){
+            sv_h.onclick=()=>{
+                hide_panel(); }}
+
+
+        function wide_view(){
+            let atv_style_slow=player.querySelector('.atv_style_slow');
+            if(atv_style_slow){
+                if(atv_style_slow.disabled==false){
+                    atv_style_slow.disabled=true; }
+                else{
+                    atv_style_slow.disabled=false; }}}
+
+
+        function hide_panel(){
+            let sv_panel=document.querySelector('#sv_panel');
+            if(sv_panel){
+                if(hide==0){
+                    hide=1;
+                    sv_panel.style.visibility='hidden'; }
+                else{
+                    hide=0;
+                    sv_panel.style.visibility='visible'; }}}
 
     } // set_player()
 
