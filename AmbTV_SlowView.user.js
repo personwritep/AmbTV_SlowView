@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        0.5
+// @version        0.6
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -215,6 +215,12 @@ function player_env(){
                     slow_play(1); }
                 else{
                     slow_play(0); }}
+            if(event.keyCode==28 || event.keyCode==17){ //「変換」「Ctrl」キー　通常再生
+                event.preventDefault();
+                slow_play(2); }
+            if(event.keyCode==29 || event.keyCode==18){ //「無変換」「Alt」キー 再生停止
+                event.preventDefault();
+                slow_play(0); }
             if(event.keyCode==87){ //「W」キー　ページアレンジ有効/無効
                 wide_view(); }
             if(event.keyCode==72){ //「H」キー　パネル表示/非表示
@@ -303,7 +309,7 @@ function player_env(){
         let VE=player.querySelector('.com-a-Video__video-element');
         let PB=player.querySelector('.com-vod-PlaybackButton');
         if(VE && PB){
-            if(n!=0){
+            if(n==1){ // スロー再生
                 run=1;
 
                 let sence=sessionStorage.getItem('ATV_SV_sence');
@@ -321,7 +327,11 @@ function player_env(){
 
                     if(i==rate_b -1){
                         i=-1; }}}
-            else{
+            else if(n==2){ // 通常再生
+                run=0;
+                clearInterval(interval_s);
+                play(); }
+            else{ // 再生停止
                 run=0;
                 clearInterval(interval_s);
                 pause(); }
