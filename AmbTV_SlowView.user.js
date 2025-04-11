@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        0.6
+// @version        0.7
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -144,18 +144,28 @@ function player_env(){
         let panel=
             '<div id="sv_panel">'+
             '<input id="sv_w" type="button" value="Wide view">'+
-            '<input id="sv_h" type="button" value="Hide panel">　Space : slow-stop　'+
+            '<input id="sv_h" type="button" value="Hide panel">'+
+            '<span class="d-b d-b1">無変換:Pause</span>'+
+            '<span class="d-b d-b2">Space:Pause-Slow</span>'+
+            '<span class="d-b d-b3">変換:Play</span>'+
             'Sence <input id="sv_s" type="number" min="10" max="50" step="1">'+
             '　Speed <input id="sv_b" type="number" min="4" max="60" step="1">'+
             '　Cut-Line <input id="cutl" type="button" value="　">'+
             '　<span><a href="'+ help_url +'" target="_blank" rel="noopener noreferrer">'+
             SVG_h +'</a></span>'+
             '<style>'+
-            '#sv_panel { position: fixed; top: 10px; left: calc(50% - 390px); z-index: 2000; '+
-            'font: normal 16px/22px Meiryo; color: #fff; padding: 2px 0 2px 12px; width: 780px; '+
+            '#sv_panel { position: fixed; top: 10px; left: 23px; z-index: 2000; '+
+            'font: normal 16px/22px Meiryo; color: #fff; padding: 2px 0 2px 12px; width: 975px; '+
             'border: 1px solid #aaa; background: #163850; user-select: none; } '+
-            '#sv_w, #sv_h { margin-right: 12px; padding: 1px 6px 0; height: 22px; color: #fff; '+
+            '#sv_w, #sv_h { margin-right: 6px; padding: 1px 6px 0; height: 22px; color: #fff; '+
             'border: none; border-radius: 2px; background: #008db9; cursor: pointer; } '+
+            '.d-b { display: inline-block; border: 1px solid #90a4ae; border-radius: 2px; '+
+            'padding: 0 4px; height: 22px; } '+
+            '.d-b1 { margin: 0 1px 0 16px; } '+
+            '.d-b2 { margin: 0 1px 0 1px; } '+
+            '.d-b3 { margin: 0 18px 0 1px; } '+
+
+
             '#sv_s, #sv_b { width: 54px; height: 26px; line-height: 20px; text-align: center; '+
             'padding: 2px 2px 0 6px; outline: none; } '+
             '#cutl { height: 21px; width: 21px; border: none; border-radius: 2px; '+
