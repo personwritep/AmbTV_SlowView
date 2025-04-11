@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        AmbTV SlowView
+// @name        AmbTV SlowView 🔲
 // @namespace        http://tampermonkey.net/
 // @version        0.7
 // @description        AbemaTV ユーティリティ
@@ -148,26 +148,25 @@ function player_env(){
             '<span class="d-b d-b1">無変換:Pause</span>'+
             '<span class="d-b d-b2">Space:Pause-Slow</span>'+
             '<span class="d-b d-b3">変換:Play</span>'+
-            'Sence <input id="sv_s" type="number" min="10" max="50" step="1">'+
-            '　Speed <input id="sv_b" type="number" min="4" max="60" step="1">'+
-            '　Cut-Line <input id="cutl" type="button" value="　">'+
+            'Sence<input id="sv_s" type="number" min="10" max="50" step="1">'+
+            'Speed<input id="sv_b" type="number" min="4" max="60" step="1">'+
+            'Cut-Line <input id="cutl" type="button" value="　">'+
             '　<span><a href="'+ help_url +'" target="_blank" rel="noopener noreferrer">'+
             SVG_h +'</a></span>'+
             '<style>'+
             '#sv_panel { position: fixed; top: 10px; left: 23px; z-index: 2000; '+
-            'font: normal 16px/22px Meiryo; color: #fff; padding: 2px 0 2px 12px; width: 975px; '+
+            'font: normal 16px/22px Meiryo; color: #fff; padding: 2px 0 2px 12px; width: 950px; '+
             'border: 1px solid #aaa; background: #163850; user-select: none; } '+
-            '#sv_w, #sv_h { margin-right: 6px; padding: 1px 6px 0; height: 22px; color: #fff; '+
+            '#sv_w, #sv_h { margin-right: 12px; padding: 1px 6px 0; height: 22px; color: #fff; '+
             'border: none; border-radius: 2px; background: #008db9; cursor: pointer; } '+
             '.d-b { display: inline-block; border: 1px solid #90a4ae; border-radius: 2px; '+
             'padding: 0 4px; height: 22px; } '+
             '.d-b1 { margin: 0 1px 0 16px; } '+
             '.d-b2 { margin: 0 1px 0 1px; } '+
-            '.d-b3 { margin: 0 18px 0 1px; } '+
-
-
-            '#sv_s, #sv_b { width: 54px; height: 26px; line-height: 20px; text-align: center; '+
-            'padding: 2px 2px 0 6px; outline: none; } '+
+            '.d-b3 { margin: 0 28px 0 1px; } '+
+            '#sv_s, #sv_b { width: 40px; height: 26px; line-height: 20px; text-align: center; '+
+            'padding: 2px 0 0; margin: 0 8px 0 2px; border: none; outline: none; color: #fff; '+
+            'background: #163850; } '+
             '#cutl { height: 21px; width: 21px; border: none; border-radius: 2px; '+
             'background: #000; outline: 1px solid #666; cursor: pointer; } '+
             '.help_ATSV { vertical-align: -4px; fill: #ccc; }'+
