@@ -24,10 +24,10 @@ function player_env(){
     let run=0; // スロー再生実行
     let hide=0; // コントロールの非表示
 
-    let sence=sessionStorage.getItem('ATV_SV_sence');
-    if(!sence){
-        sence=21;
-        sessionStorage.setItem('ATV_SV_sence', sence); }
+    let sense=sessionStorage.getItem('ATV_SV_sense');
+    if(!sense){
+        sense=21;
+        sessionStorage.setItem('ATV_SV_sense', sense); }
 
     let rate_b=sessionStorage.getItem('ATV_SV_rate_b');
     if(!rate_b){
@@ -148,7 +148,7 @@ function player_env(){
             '<span class="d-b d-b1">無変換:Pause</span>'+
             '<span class="d-b d-b2">Space:Pause-Slow</span>'+
             '<span class="d-b d-b3">変換:Play</span>'+
-            'Sence<input id="sv_s" type="number" min="10" max="50" step="1">'+
+            'Sense<input id="sv_s" type="number" min="10" max="50" step="1">'+
             'Speed<input id="sv_b" type="number" min="4" max="60" step="1">'+
             'Cut-Line <input id="cutl" type="button" value="　">'+
             '　<span><a href="'+ help_url +'" target="_blank" rel="noopener noreferrer">'+
@@ -156,7 +156,7 @@ function player_env(){
             '<style>'+
             '#sv_panel { position: fixed; top: 10px; left: 23px; z-index: 2000; '+
             'font: normal 16px/22px Meiryo; color: #fff; padding: 2px 0 2px 12px; width: 950px; '+
-            'border: 1px solid #aaa; background: #163850; user-select: none; } '+
+            'border: 1px solid #444; background: #163850; user-select: none; } '+
             '#sv_w, #sv_h { margin-right: 12px; padding: 1px 6px 0; height: 22px; color: #fff; '+
             'border: none; border-radius: 2px; background: #008db9; cursor: pointer; } '+
             '.d-b { display: inline-block; border: 1px solid #90a4ae; border-radius: 2px; '+
@@ -178,11 +178,11 @@ function player_env(){
 
         let sv_s=document.querySelector('#sv_s');
         if(sv_s){
-            sv_s.value=sence;
+            sv_s.value=sense;
             sv_s.onchange=function(){
                 slow_play(0);
-                sence=sv_s.value;
-                sessionStorage.setItem('ATV_SV_sence', sence); }}
+                sense=sv_s.value;
+                sessionStorage.setItem('ATV_SV_sense', sense); }}
 
 
         let sv_b=document.querySelector('#sv_b');
@@ -321,8 +321,8 @@ function player_env(){
             if(n==1){ // スロー再生
                 run=1;
 
-                let sence=sessionStorage.getItem('ATV_SV_sence');
-                interval_s=setInterval(slow, sence)
+                let sense=sessionStorage.getItem('ATV_SV_sense');
+                interval_s=setInterval(slow, sense)
 
                 let i=0;
                 function slow(){
