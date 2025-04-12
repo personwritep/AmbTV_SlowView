@@ -24,10 +24,10 @@ function player_env(){
     let run=0; // スロー再生実行
     let hide=0; // コントロールの非表示
 
-    let sence=sessionStorage.getItem('ATV_SV_sence');
-    if(!sence){
-        sence=21;
-        sessionStorage.setItem('ATV_SV_sence', sence); }
+    let sense=sessionStorage.getItem('ATV_SV_sense');
+    if(!sense){
+        sense=21;
+        sessionStorage.setItem('ATV_SV_sense', sense); }
 
     let rate_b=sessionStorage.getItem('ATV_SV_rate_b');
     if(!rate_b){
@@ -145,7 +145,7 @@ function player_env(){
             '<div id="sv_panel">'+
             '<input id="sv_w" type="button" value="Wide view">'+
             '<input id="sv_h" type="button" value="Hide panel">　Space : slow-stop　'+
-            'Sence <input id="sv_s" type="number" min="10" max="50" step="1">'+
+            'Sense <input id="sv_s" type="number" min="10" max="50" step="1">'+
             '　Speed <input id="sv_b" type="number" min="4" max="60" step="1">'+
             '　Cut-Line <input id="cutl" type="button" value="　">'+
             '　<span><a href="'+ help_url +'" target="_blank" rel="noopener noreferrer">'+
@@ -169,11 +169,11 @@ function player_env(){
 
         let sv_s=document.querySelector('#sv_s');
         if(sv_s){
-            sv_s.value=sence;
+            sv_s.value=sense;
             sv_s.onchange=function(){
                 slow_play(0);
-                sence=sv_s.value;
-                sessionStorage.setItem('ATV_SV_sence', sence); }}
+                sense=sv_s.value;
+                sessionStorage.setItem('ATV_SV_sense', sense); }}
 
 
         let sv_b=document.querySelector('#sv_b');
@@ -306,8 +306,8 @@ function player_env(){
             if(n!=0){
                 run=1;
 
-                let sence=sessionStorage.getItem('ATV_SV_sence');
-                interval_s=setInterval(slow, sence)
+                let sense=sessionStorage.getItem('ATV_SV_sense');
+                interval_s=setInterval(slow, sense)
 
                 let i=0;
                 function slow(){
