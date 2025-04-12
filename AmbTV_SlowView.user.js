@@ -155,21 +155,22 @@ function player_env(){
             SVG_h +'</a></span>'+
             '<style>'+
             '#sv_panel { position: fixed; top: 10px; left: 23px; z-index: 2000; '+
-            'font: normal 16px/22px Meiryo; color: #fff; padding: 2px 0 2px 12px; width: 950px; '+
+            'font: normal 16px/22px Meiryo; color: #bbb; padding: 2px 0 2px 12px; width: 950px; '+
             'border: 1px solid #444; background: #163850; user-select: none; } '+
-            '#sv_w, #sv_h { margin-right: 12px; padding: 1px 6px 0; height: 22px; color: #fff; '+
-            'border: none; border-radius: 2px; background: #008db9; cursor: pointer; } '+
-            '.d-b { display: inline-block; border: 1px solid #90a4ae; border-radius: 2px; '+
+            '#sv_w, #sv_h { margin-right: 12px; padding: 1px 6px 0; height: 22px; color: #bbb; '+
+            'border: none; border-radius: 2px; background: transparent; cursor: pointer; } '+
+            '#sv_w:hover, #sv_h:hover { background: #008db9; } '+
+            '.d-b { display: inline-block; border: 1px solid #888; border-radius: 2px; '+
             'padding: 0 4px; height: 22px; } '+
             '.d-b1 { margin: 0 1px 0 16px; } '+
             '.d-b2 { margin: 0 1px 0 1px; } '+
             '.d-b3 { margin: 0 28px 0 1px; } '+
             '#sv_s, #sv_b { width: 40px; height: 26px; line-height: 20px; text-align: center; '+
-            'padding: 2px 0 0; margin: 0 8px 0 2px; border: none; outline: none; color: #fff; '+
+            'padding: 2px 0 0; margin: 0 8px 0 2px; border: none; outline: none; color: #bbb; '+
             'background: #163850; } '+
             '#cutl { height: 21px; width: 21px; border: none; border-radius: 2px; '+
             'background: #000; outline: 1px solid #666; cursor: pointer; } '+
-            '.help_ATSV { vertical-align: -4px; fill: #ccc; }'+
+            '.help_ATSV { vertical-align: -4px; fill: #aaa; }'+
             '</style></div>';
 
         if(!document.querySelector('#sv_panel')){
