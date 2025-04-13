@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        0.7
+// @version        0.8
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -21,7 +21,8 @@ monitor.observe(target, { childList: true });
 
 function player_env(){
     let interval_s; // スロー実行のインターバル
-    let run=0; // スロー再生実行
+    let run=2; // 0: 停止 1: スロー再生 2:再生
+    let wide=1; // atv_style_slowのスタイル適用
     let hide=0; // コントロールの非表示
 
     let sense=sessionStorage.getItem('ATV_SV_sense');
@@ -40,7 +41,7 @@ function player_env(){
         sessionStorage.setItem('ATV_SV_cut', cut); }
 
 
-    if(!location.pathname.includes('video/episode')){ // 書庫型動画プレーヤーのみ
+    if(!location.pathname.includes('video/episode')){ // 書庫型動画プレーヤー以外はパネル削除
         if(document.querySelector('#sv_panel')){
             document.querySelector('#sv_panel').remove(); }}
 
@@ -121,8 +122,8 @@ function player_env(){
 
         let atv_style_slow=player.querySelector('.atv_style_slow');
         if(atv_style_slow){
+            wide=1;
             atv_style_slow.disabled=false; }
-
 
 
         let style_hide=
@@ -145,26 +146,25 @@ function player_env(){
             '<div id="sv_panel">'+
             '<input id="sv_w" type="button" value="Wide view">'+
             '<input id="sv_h" type="button" value="Hide panel">'+
-            '<span class="d-b d-b1">無変換:Pause</span>'+
-            '<span class="d-b d-b2">Space:Pause-Slow</span>'+
-            '<span class="d-b d-b3">変換:Play</span>'+
+            '<span class="d-b d-b1">Space:Pause-Slow</span>'+
+            '<span class="d-b d-b2">変換:Pause-Play</span>'+
             'Sense<input id="sv_s" type="number" min="10" max="50" step="1">'+
             'Speed<input id="sv_b" type="number" min="4" max="60" step="1">'+
             'Cut-Line <input id="cutl" type="button" value="　">'+
             '　<span><a href="'+ help_url +'" target="_blank" rel="noopener noreferrer">'+
             SVG_h +'</a></span>'+
             '<style>'+
-            '#sv_panel { position: fixed; top: 10px; left: 23px; z-index: 2000; '+
-            'font: normal 16px/22px Meiryo; color: #bbb; padding: 2px 0 2px 12px; width: 950px; '+
+            '#sv_panel { position: fixed; top: 10px; left: 23px; z-index: 2000; color: #bbb; '+
+            'font: normal 16px/22px Meiryo; padding: 2px 0 2px 12px; width: 890px; '+
             'border: 1px solid #444; background: #163850; user-select: none; } '+
             '#sv_w, #sv_h { margin-right: 12px; padding: 1px 6px 0; height: 22px; color: #bbb; '+
-            'border: none; border-radius: 2px; background: transparent; cursor: pointer; } '+
+            'border: none; border-radius: 2px; outline: none; background: transparent; '+
+            'cursor: pointer; } '+
             '#sv_w:hover, #sv_h:hover { color: #fff; background: #008db9; } '+
             '.d-b { display: inline-block; border: 1px solid #888; border-radius: 2px; '+
             'padding: 0 4px; height: 22px; } '+
             '.d-b1 { margin: 0 1px 0 16px; } '+
-            '.d-b2 { margin: 0 1px 0 1px; } '+
-            '.d-b3 { margin: 0 28px 0 1px; } '+
+            '.d-b2 { margin: 0 28px 0 1px; } '+
             '#sv_s, #sv_b { width: 40px; height: 26px; line-height: 20px; text-align: center; '+
             'padding: 2px 0 0; margin: 0 8px 0 2px; border: none; outline: none; color: #bbb; '+
             'background: #163850; -moz-appearance: textfield; } '+
@@ -184,6 +184,7 @@ function player_env(){
         if(sv_s){
             sv_s.value=sense;
             sv_s.onchange=function(){
+                run=0;
                 slow_play(0);
                 sense=sv_s.value;
                 sessionStorage.setItem('ATV_SV_sense', sense); }}
@@ -193,6 +194,7 @@ function player_env(){
         if(sv_b){
             sv_b.value=rate_b;
             sv_b.onchange=function(){
+                run=0;
                 slow_play(0);
                 rate_b=sv_b.value;
                 sessionStorage.setItem('ATV_SV_rate_b', rate_b); }}
@@ -221,22 +223,27 @@ function player_env(){
 
 
         document.body.addEventListener('keydown', function(event){
-            if(event.keyCode==32){ //「Space」キー
+            if(event.keyCode==32){ //「Space」キー スロー再生/停止
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                if(run==0){
+                if(run==0 || run==2){
+                    run=1;
                     slow_play(1); }
                 else{
+                    run=0;
                     slow_play(0); }}
-            if(event.keyCode==28 || event.keyCode==17){ //「変換」「Ctrl」キー　通常再生
+            else if(event.keyCode==28 || event.keyCode==18){ //「変換・Alt」キー 通常再生/停止
                 event.preventDefault();
-                slow_play(2); }
-            if(event.keyCode==29 || event.keyCode==18){ //「無変換」「Alt」キー 再生停止
-                event.preventDefault();
-                slow_play(0); }
-            if(event.keyCode==87){ //「W」キー　ページアレンジ有効/無効
+                event.stopImmediatePropagation();
+                if(run==0 || run==1){
+                    run=2;
+                    slow_play(2); }
+                else{
+                    run=0;
+                    slow_play(0); }}
+            else if(event.keyCode==87){ //「W」キー　ページアレンジ有効/無効
                 wide_view(); }
-            if(event.keyCode==72){ //「H」キー　パネル表示/非表示
+            else if(event.keyCode==72){ //「H」キー　パネル表示/非表示
                 hide_panel(); }
         });
 
@@ -256,9 +263,11 @@ function player_env(){
         function wide_view(){
             let atv_style_slow=player.querySelector('.atv_style_slow');
             if(atv_style_slow){
-                if(atv_style_slow.disabled==false){
+                if(wide==1){
+                    wide=0;
                     atv_style_slow.disabled=true; }
                 else{
+                    wide=1;
                     atv_style_slow.disabled=false; }}}
 
 
@@ -323,14 +332,12 @@ function player_env(){
         let PB=player.querySelector('.com-vod-PlaybackButton');
         if(VE && PB){
             if(n==1){ // スロー再生
-                run=1;
-
                 let sense=sessionStorage.getItem('ATV_SV_sense');
                 interval_s=setInterval(slow, sense)
+                let rate_b=sessionStorage.getItem('ATV_SV_rate_b');
 
                 let i=0;
                 function slow(){
-                    let rate_b=sessionStorage.getItem('ATV_SV_rate_b');
                     i++;
 
                     if(i<rate_b -2){
@@ -341,11 +348,9 @@ function player_env(){
                     if(i==rate_b -1){
                         i=-1; }}}
             else if(n==2){ // 通常再生
-                run=0;
                 clearInterval(interval_s);
                 play(); }
             else{ // 再生停止
-                run=0;
                 clearInterval(interval_s);
                 pause(); }
 
