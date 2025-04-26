@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        0.8
+// @version        0.9
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -96,6 +96,10 @@ function player_env(){
             '.c-tv-TimeshiftSlotContainerView-detail__action-buttons { display: none; } '+
             '.com-vod-VODRecommendedContentsContainerView__player-and-details { '+
             'margin: 0; } '+
+            // control
+            '.com-vod-VODScreen__video-control-bg { visibility: hidden; } '+
+            '.com-vod-VODScreen-video-control { bottom: -200px; background: #000; } '+
+            '.com-vod-VideoControlBar--fade-out { opacity: 1; visibility: visible; } '+
             '</style>'+
 
             '<style class="atv_style_basic_slow">'+
