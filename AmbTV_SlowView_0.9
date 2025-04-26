@@ -99,7 +99,8 @@ function player_env(){
             // control
             '.com-vod-VODScreen__video-control-bg { visibility: hidden; } '+
             '.com-vod-VODScreen-video-control { bottom: -200px; background: #000; } '+
-            '.com-vod-VideoControlBar--fade-out { opacity: 1; visibility: visible; } '+
+            '.com-vod-VideoControlBar { '+
+            'display: grid !important; opacity: 1 !important; visibility: visible !important; } '+
             '</style>'+
 
             '<style class="atv_style_basic_slow">'+
@@ -121,10 +122,10 @@ function player_env(){
             '--com-vod-VODResponsiveMainContent--space-below-player: 80; } '+ // 🟠AD
             '</style>';
 
-        if(!player.querySelector('.atv_style_slow')){
-            player.insertAdjacentHTML('beforeend', style); }
+        if(!document.querySelector('.atv_style_slow')){
+            document.body.insertAdjacentHTML('beforeend', style); }
 
-        let atv_style_slow=player.querySelector('.atv_style_slow');
+        let atv_style_slow=document.querySelector('.atv_style_slow');
         if(atv_style_slow){
             wide=1;
             atv_style_slow.disabled=false; }
@@ -265,7 +266,7 @@ function player_env(){
 
 
         function wide_view(){
-            let atv_style_slow=player.querySelector('.atv_style_slow');
+            let atv_style_slow=document.querySelector('.atv_style_slow');
             if(atv_style_slow){
                 if(wide==1){
                     wide=0;
