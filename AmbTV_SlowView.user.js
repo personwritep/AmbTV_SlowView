@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        0.9
+// @version        1.0
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
-// @exclude        https://abema.tv/now-on-air/*
 // @icon        https://www.google.com/s2/favicons?sz=64&domain=abema.tv
 // @grant        none
 // @updateURL        https://github.com/personwritep/AmbTV_SlowView/raw/main/AmbTV_SlowView.user.js
@@ -13,17 +12,62 @@
 // ==/UserScript==
 
 
+let act=0; // 起動ショートカットのコントロールフラグ
+
+
 let target=document.querySelector('head > title');
 let monitor=new MutationObserver(player_env);
 monitor.observe(target, { childList: true });
 
+player_env;
 
 
 function player_env(){
+    if(location.pathname.includes('video/episode')){ // 書庫型動画プレーヤー以外はパネル削除
+        let retry=0;
+        let interval=setInterval(wait_target, 10);
+        function wait_target(){
+            retry++;
+            if(retry>100){ // リトライ制限 100回 1secまで
+                clearInterval(interval);
+                act=0;
+                reset(); }
+            let video=document.querySelector('.com-a-Video__video');
+            if(video){
+                clearInterval(interval);
+                act=1;
+                set_act(); }}}
+    else{
+        act=0;
+        reset(); }
+
+
+    function set_act(){
+        document.body.addEventListener('keydown', function(event){
+            if(event.ctrlKey && event.altKey && act==1){ //「Ctrl+Alt」キーの押下
+                event.preventDefault();
+                act=2;
+                main(); }}); }
+
+
+    function reset(){
+        if(document.querySelector('#sv_panel')){
+            document.querySelector('#sv_panel').remove(); }
+
+        let player=document.querySelector(
+            '.com-vod-VODRecommendedContentsContainerView__player');
+        if(player){
+            player.style.boxShadow=''; }}
+
+} // player_env()
+
+
+
+function main(){
     let interval_s; // スロー実行のインターバル
     let run=2; // 0: 停止 1: スロー再生 2:再生
-    let wide=1; // atv_style_slowのスタイル適用
-    let hide=0; // コントロールの非表示
+    let panel_v; // パネル表示の状態 0:非表示  1:表示
+
 
     let sense=sessionStorage.getItem('ATV_SV_sense');
     if(!sense){
@@ -41,27 +85,15 @@ function player_env(){
         sessionStorage.setItem('ATV_SV_cut', cut); }
 
 
-    if(!location.pathname.includes('video/episode')){ // 書庫型動画プレーヤー以外はパネル削除
-        if(document.querySelector('#sv_panel')){
-            document.querySelector('#sv_panel').remove(); }}
 
-
-    let retry0=0;
-    let interval0=setInterval(wait_target0, 20);
-    function wait_target0(){
-        retry0++;
-        if(retry0>100){ // リトライ制限 100回 2secまで
-            clearInterval(interval0); }
-        let player=document.querySelector(
-            '.com-vod-VODRecommendedContentsContainerView__player');
-        if(player){
-            clearInterval(interval0);
-            set_player(player); }}
-
+    let player=document.querySelector(
+        '.com-vod-VODRecommendedContentsContainerView__player');
+    if(player){
+        set_player(player); }
 
 
     function set_player(player){
-        let help_url='https://ameblo.jp/personwritep/entry-12878536354.html'
+        let help_url='https://ameblo.jp/personwritep/entry-12910769407.html'
 
         let SVG_h=
             '<svg class="help_ATSV" height="20" width="20" viewBox="0 0 150 150">'+
@@ -72,100 +104,24 @@ function player_env(){
             'C105 48 84 37 69 40M70 94C58 99 66 118 78 112C90 107 82 89 70 94z">'+
             '</path></svg>';
 
-
-        let style=
-            '<style class="atv_style_slow">'+
-            'html { overflow-y: hidden; } '+
-            'button.com-m-HeaderMenu, '+
-            '.com-application-Header__right, '+
-            '.c-application-SideNavigation, '+
-            '.c-application-SideNavigation--collapsed, '+
-            '.com-vod-VODRecommendedContentsContainerView__player-aside-recommended'+
-            ' { display: none !important; } '+
-            '.c-video-EpisodeContainerView-breadcrumb, '+
-            '.com-vod-VODDetailsAccordion, '+
-            '.com-video-EpisodePlayerSection__header-action-buttons, '+
-            '.com-video-EpisodeTitleBlock__expire-text, '+
-            '.com-vod-VODRecommendedContentsContainerView__episode-list, '+
-            '.com-feature-area-FeatureRecommendedArea__section, '+
-            '.c-video-EpisodeContainerView__page-bottom, '+
-            '.c-application-FooterContainer { display: none; } '+
-            // slots playrer
-            '.c-tv-TimeshiftSlotContainerView-breadcrumb, '+
-            '.c-tv-TimeshiftPlayerContainerView-comment-button, '+
-            '.c-tv-TimeshiftSlotContainerView-detail__action-buttons { display: none; } '+
-            '.com-vod-VODRecommendedContentsContainerView__player-and-details { '+
-            'margin: 0; } '+
-            // control
-            '.com-vod-VODScreen__video-control-bg { visibility: hidden; } '+
-            '.com-vod-VODScreen-video-control { bottom: -200px; background: #000; } '+
-            '.com-vod-VideoControlBar { '+
-            'display: grid !important; opacity: 1 !important; visibility: visible !important; } '+
-            '</style>'+
-
-            '<style class="atv_style_basic_slow">'+
-            '.com-application-Header { height: 50px; } '+
-            '.com-vod-VODResponsiveMainContent { margin-top: 58px; overflow-x: visible; } '+
-            '.com-vod-VODScreen-container { background: #000 !important; } '+
-            '.com-playback-SeekBar__highlighter, .com-playback-SeekBar__marker, '+
-            '.com-a-Slider__highlighter { background-color: #2196f3 !important; } '+
-            '.com-vod-VODScreen__video-control-bg { '+
-            'height: 60px !important; background: rgba(0,0,0,0.5) !important; } '+
-            '.com-vod-VODScreen__recommend-content-bg { '+
-            'background-image: none !important; } '+
-            '.com-vod-VODPlayerNextContentRecommendBase__inner { '+
-            'padding: 10px; background: rgb(0 0 0 / 50%); } '+
-            '.com-vod-VODResponsiveMainContent { '+
-            '--com-vod-VODResponsiveMainContent--content-min-width: 820px; } '+
-            '.com-video-EpisodePlayerSectionExternalContent { display: none; } '+ // 🟠AD
-            '.com-vod-VODResponsiveMainContent--with-partner-service-banner { '+
-            '--com-vod-VODResponsiveMainContent--space-below-player: 80; } '+ // 🟠AD
-            '</style>';
-
-        if(!document.querySelector('.atv_style_slow')){
-            document.body.insertAdjacentHTML('beforeend', style); }
-
-        let atv_style_slow=document.querySelector('.atv_style_slow');
-        if(atv_style_slow){
-            wide=1;
-            atv_style_slow.disabled=false; }
-
-
-        let style_hide=
-            '<style class="atv_style_hide">'+
-            '.com-vod-VODScreen-container { cursor: none; } '+
-            '.com-vod-VideoControlBar, .com-vod-VODScreen__video-control-bg { '+
-            'display: none !important; } '+
-            '</style>';
-
-        if(!player.querySelector('.atv_style_hide')){
-            player.insertAdjacentHTML('beforeend', style_hide); }
-
-        let atv_style_hide=player.querySelector('.atv_style_hide'); // 🟩 コントロール非表示
-        if(atv_style_hide){
-            atv_style_hide.disabled=true; }
-
-
-
         let panel=
             '<div id="sv_panel">'+
-            '<input id="sv_w" type="button" value="Wide view">'+
-            '<input id="sv_h" type="button" value="Hide panel">'+
-            '<span class="d-b d-b1">Space:Pause-Slow</span>'+
-            '<span class="d-b d-b2">変換:Pause-Play</span>'+
+            '<input id="sv_h" type="button" value="Ctrl+Alt:Panel">'+
+            '<span class="d-b d-b1">Space:Play-Pause</span>'+
+            '<span class="d-b d-b2">変換:Slow-Pause</span>'+
             'Sense<input id="sv_s" type="number" min="10" max="50" step="1">'+
             'Speed<input id="sv_b" type="number" min="4" max="60" step="1">'+
             'Cut-Line <input id="cutl" type="button" value="　">'+
             '　<span><a href="'+ help_url +'" target="_blank" rel="noopener noreferrer">'+
             SVG_h +'</a></span>'+
             '<style>'+
-            '#sv_panel { position: fixed; top: 10px; left: 23px; z-index: 2000; color: #bbb; '+
-            'font: normal 16px/22px Meiryo; padding: 2px 0 2px 12px; width: 890px; '+
+            '#sv_panel { position: fixed; top: 15px; left: 65px; z-index: 2000; color: #bbb; '+
+            'font: normal 16px/22px Meiryo; padding: 2px 0 2px 12px; width: 820px; '+
             'border: 1px solid #444; background: #163850; user-select: none; } '+
-            '#sv_w, #sv_h { margin-right: 12px; padding: 1px 6px 0; height: 22px; color: #bbb; '+
-            'border: none; border-radius: 2px; outline: none; background: transparent; '+
-            'cursor: pointer; } '+
-            '#sv_w:hover, #sv_h:hover { color: #fff; background: #008db9; } '+
+            '#sv_h { margin-right: 12px; padding: 0 6px; height: 22px; color: #bbb; '+
+            'border: 1px solid #888; border-radius: 2px; background: transparent; '+
+            'outline: none; cursor: pointer; } '+
+            '#sv_h:hover { color: #fff; background: #008db9; } '+
             '.d-b { display: inline-block; border: 1px solid #888; border-radius: 2px; '+
             'padding: 0 4px; height: 22px; } '+
             '.d-b1 { margin: 0 1px 0 16px; } '+
@@ -181,42 +137,39 @@ function player_env(){
             '.help_ATSV { vertical-align: -4px; fill: #aaa; }'+
             '</style></div>';
 
-        if(!document.querySelector('#sv_panel')){
-            document.body.insertAdjacentHTML('beforeend', panel); }
+        if(document.querySelector('#sv_panel')){
+            document.querySelector('#sv_panel').remove(); }
+        document.body.insertAdjacentHTML('beforeend', panel);
+
+        panel_v=1;
 
 
         let sv_s=document.querySelector('#sv_s');
         if(sv_s){
             sv_s.value=sense;
-            sv_s.onchange=function(){
+            sv_s.onchange=()=>{
                 run=0;
                 slow_play(0);
                 sense=sv_s.value;
-                sessionStorage.setItem('ATV_SV_sense', sense); }}
+                sessionStorage.setItem('ATV_SV_sense', sense);
+                sv_s.blur(); }}
 
 
         let sv_b=document.querySelector('#sv_b');
         if(sv_b){
             sv_b.value=rate_b;
-            sv_b.onchange=function(){
+            sv_b.onchange=()=>{
                 run=0;
                 slow_play(0);
                 rate_b=sv_b.value;
-                sessionStorage.setItem('ATV_SV_rate_b', rate_b); }}
-
-
-        ad_block(player); // ADブロック
-
-
-        player.oncontextmenu=function(event){
-            event.preventDefault();
-            hide_con(player); } // 🟩 動画面の右クリックでコントロールを非表示
+                sessionStorage.setItem('ATV_SV_rate_b', rate_b);
+                sv_b.blur(); }}
 
 
         let cutl=document.querySelector('#cutl');
         if(cutl){
             cut_line(player, cutl);
-            cutl.onclick=function(){
+            cutl.onclick=()=>{
                 if(cut==0){
                     cut=1; }
                 else if(cut==1){
@@ -227,8 +180,15 @@ function player_env(){
                 sessionStorage.setItem('ATV_SV_cut', cut); }}
 
 
+        let sv_h=document.querySelector('#sv_h');
+        if(sv_h){
+            sv_h.onclick=()=>{
+                disp_panel(0); }}
+
+
+
         document.body.addEventListener('keydown', function(event){
-            if(event.keyCode==32){ //「Space」キー スロー再生/停止
+            if(event.keyCode==28){ //「変換」キー スロー再生/停止
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 if(run==0 || run==2){
@@ -237,7 +197,7 @@ function player_env(){
                 else{
                     run=0;
                     slow_play(0); }}
-            else if(event.keyCode==28 || event.keyCode==18){ //「変換・Alt」キー 通常再生/停止
+            else if(event.keyCode==32){ //「Space」キー 通常再生/停止
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 if(run==0 || run==1){
@@ -246,87 +206,60 @@ function player_env(){
                 else{
                     run=0;
                     slow_play(0); }}
-            else if(event.keyCode==87){ //「W」キー　ページアレンジ有効/無効
-                wide_view(); }
-            else if(event.keyCode==72){ //「H」キー　パネル表示/非表示
-                hide_panel(); }
+            else if(event.altKey && act==2){
+                //    event.preventDefault();
+                if(event.ctrlKey){
+                    if(panel_v==0){
+                        disp_panel(1); }
+                    else{
+                        disp_panel(0); }}}
         });
 
 
-        let sv_w=document.querySelector('#sv_w');
-        if(sv_w){
-            sv_w.onclick=()=>{
-                wide_view(); }}
-
-
-        let sv_h=document.querySelector('#sv_h');
-        if(sv_h){
-            sv_h.onclick=()=>{
-                hide_panel(); }}
-
-
-        function wide_view(){
-            let atv_style_slow=document.querySelector('.atv_style_slow');
-            if(atv_style_slow){
-                if(wide==1){
-                    wide=0;
-                    atv_style_slow.disabled=true; }
-                else{
-                    wide=1;
-                    atv_style_slow.disabled=false; }}}
-
-
-        function hide_panel(){
+        function disp_panel(n){ // 0: 非表示 1: 表示
             let sv_panel=document.querySelector('#sv_panel');
             if(sv_panel){
-                if(hide==0){
-                    hide=1;
+                if(n==0){
+                    panel_v=0;
                     sv_panel.style.visibility='hidden'; }
                 else{
-                    hide=0;
+                    panel_v=1;
                     sv_panel.style.visibility='visible'; }}}
 
     } // set_player()
 
 
 
-    function ad_block(player){
-        let retry2=0;
-        let interval2=setInterval(wait_target2, 20);
-        function wait_target2(){
-            retry2++;
-            if(retry2>100){ // リトライ制限 100回 2secまで
-                clearInterval(interval2); }
-            let ad_container=player.querySelector('#videoAdContainer > div');
-            if(ad_container){
-                clearInterval(interval2);
-                ad_container.remove(); }}}
-
-
-
-    function hide_con(player){
-        let atv_style_hide=player.querySelector('.atv_style_hide');
-        if(atv_style_hide){
-            if(atv_style_hide.disabled==true){
-                atv_style_hide.disabled=false; }
-            else{
-                atv_style_hide.disabled=true; }}}
-
-
-
     function cut_line(player, cutl){
-        if(cut==0){
-            cutl.style.outline='1px solid #666';
-            cutl.style.boxShadow='';
-            player.style.boxShadow=''; }
-        else if(cut==1){
-            cutl.style.outline='1px solid #fff';
-            cutl.style.boxShadow='';
-            player.style.boxShadow='0 0 0 1px #fff'; }
-        else if(cut==2){
-            cutl.style.outline='1px solid #fff';
-            cutl.style.boxShadow='inset 0 0 0 1px #000, inset 0 0 0 2px #fff';
-            player.style.boxShadow='0 0 0 1px #000, 0 0 0 10px #fff'; }}
+        let video=player.querySelector('.com-a-Video__video');
+        let video_elem=video.querySelector('.com-a-Video__video-element');
+        if(video && video_elem){
+            if(cut==0){
+                cutl.style.outline='1px solid #666';
+                cutl.style.boxShadow='';
+                player.style.boxShadow='';
+                video.style.display='block';
+                video.style.alignItems='';
+                video_elem.style.height='100%';
+                video_elem.style.boxShadow=''; }
+            else if(cut==1){
+                cutl.style.outline='1px solid #fff';
+                cutl.style.boxShadow='';
+                player.style.boxShadow='0 0 0 1px #fff';
+                video.style.display='flex';
+                video.style.alignItems='center';
+                video_elem.style.height='fit-content';
+                video_elem.style.boxShadow='0 0 0 1px #fff'; }
+            else if(cut==2){
+                cutl.style.outline='1px solid #fff';
+                cutl.style.boxShadow='inset 0 0 0 1px #000, inset 0 0 0 2px #fff';
+                player.style.boxShadow='0 0 0 1px #000, 0 0 0 10px #fff';
+                video.style.display='flex';
+                video.style.alignItems='center';
+                video_elem.style.height='fit-content';
+                video_elem.style.boxShadow='0 0 0 1px #000, 0 0 0 400px #fff'; }}
+
+    } // cut_line()
 
 
 
@@ -370,4 +303,4 @@ function player_env(){
 
     } // slow_play()
 
-} // player_env()
+} // main()
