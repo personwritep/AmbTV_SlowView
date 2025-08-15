@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        1.0
+// @version        1.1
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -267,7 +267,8 @@ function main(){
         let player=document.querySelector(
             '.com-vod-VODRecommendedContentsContainerView__player');
         let VE=player.querySelector('.com-a-Video__video-element');
-        let PB=player.querySelector('.com-vod-PlaybackButton');
+        let PB=player.querySelector('.com-vod-VideoControlButton');
+
         if(VE && PB){
             if(n==1){ // スロー再生
                 let sense=sessionStorage.getItem('ATV_SV_sense');
