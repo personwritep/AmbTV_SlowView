@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        1.1
+// @version        1.2
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -54,8 +54,7 @@ function player_env(){
         if(document.querySelector('#sv_panel')){
             document.querySelector('#sv_panel').remove(); }
 
-        let player=document.querySelector(
-            '.com-vod-VODRecommendedContentsContainerView__player');
+        let player=document.querySelector('.com-vod-VODMiniPlayerWrapper');
         if(player){
             player.style.boxShadow=''; }}
 
@@ -86,8 +85,7 @@ function main(){
 
 
 
-    let player=document.querySelector(
-        '.com-vod-VODRecommendedContentsContainerView__player');
+    let player=document.querySelector('.com-vod-VODMiniPlayerWrapper');
     if(player){
         set_player(player); }
 
@@ -237,25 +235,25 @@ function main(){
             if(cut==0){
                 cutl.style.outline='1px solid #666';
                 cutl.style.boxShadow='';
-                player.style.boxShadow='';
                 video.style.display='block';
                 video.style.alignItems='';
+                video.style.padding='0';
                 video_elem.style.height='100%';
                 video_elem.style.boxShadow=''; }
             else if(cut==1){
                 cutl.style.outline='1px solid #fff';
                 cutl.style.boxShadow='';
-                player.style.boxShadow='0 0 0 1px #fff';
                 video.style.display='flex';
                 video.style.alignItems='center';
+                video.style.padding='16px';
                 video_elem.style.height='fit-content';
                 video_elem.style.boxShadow='0 0 0 1px #fff'; }
             else if(cut==2){
                 cutl.style.outline='1px solid #fff';
                 cutl.style.boxShadow='inset 0 0 0 1px #000, inset 0 0 0 2px #fff';
-                player.style.boxShadow='0 0 0 1px #000, 0 0 0 10px #fff';
                 video.style.display='flex';
                 video.style.alignItems='center';
+                video.style.padding='16px';
                 video_elem.style.height='fit-content';
                 video_elem.style.boxShadow='0 0 0 1px #000, 0 0 0 400px #fff'; }}
 
@@ -264,8 +262,7 @@ function main(){
 
 
     function slow_play(n){
-        let player=document.querySelector(
-            '.com-vod-VODRecommendedContentsContainerView__player');
+        let player=document.querySelector('.com-vod-VODMiniPlayerWrapper');
         let VE=player.querySelector('.com-a-Video__video-element');
         let PB=player.querySelector('.com-vod-VideoControlButton');
 
