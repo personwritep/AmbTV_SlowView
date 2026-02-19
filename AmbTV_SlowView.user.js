@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        1.3
+// @version        1.4
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -48,7 +48,13 @@ function player_env(){
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 act=2;
-                main(); }}); }
+                main(); }
+            if(event.keyCode==32 && is_end()){ //「Space」キーの押下
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                freeze(); }});
+
+    } // set_act()
 
 
     function reset(){
@@ -58,6 +64,38 @@ function player_env(){
         let player_wrap=document.querySelector('.com-vod-VODMiniPlayerWrapper');
         if(player_wrap){
             player_wrap.style.boxShadow=''; }}
+
+
+    function is_end(){
+        let next_card=document.querySelector('.com-pages-episode-NextContentCard__inner');
+        let recommend=document.querySelector('.com-pages-episode-FullScreenRecommend');
+        if(next_card){
+            let card_width=window.getComputedStyle(next_card).width;
+            if(card_width!='0px' || recommend){
+                return true; }}}
+
+
+    function freeze(){
+        let next_card=document.querySelector('.com-pages-episode-NextContentCard__inner');
+        let cancel=document.querySelector('.com-pages-episode-NextContentCard__cancel-button');
+        if(next_card && cancel){
+            let card_width=window.getComputedStyle(next_card).width;
+            if(card_width!='0px'){
+                stop_end();
+
+                let monitor=new MutationObserver(stop_end); // next_cardパネルを監視
+                monitor.observe(next_card, { attributes: true }); } // 2回目のcancelを押す
+
+            function stop_end(){
+                next_card.style.visibility='hidden';
+                let recommend=document.querySelector('.com-pages-episode-FullScreenRecommend');
+                if(recommend){
+                    recommend.style.visibility='hidden'; }
+                setTimeout(()=>{
+                    cancel.click();
+                }, 20); }}
+
+    } // freeze()
 
 } // player_env()
 
