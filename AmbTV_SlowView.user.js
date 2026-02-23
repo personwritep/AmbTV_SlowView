@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        1.4
+// @version        1.5
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -71,7 +71,8 @@ function player_env(){
         let recommend=document.querySelector('.com-pages-episode-FullScreenRecommend');
         if(next_card){
             let card_width=window.getComputedStyle(next_card).width;
-            if(card_width!='0px' || recommend){
+            card_width=parseInt(card_width, 10); // 単位を外して10進数に
+            if(card_width>100 || recommend){
                 return true; }}}
 
 
@@ -80,7 +81,8 @@ function player_env(){
         let cancel=document.querySelector('.com-pages-episode-NextContentCard__cancel-button');
         if(next_card && cancel){
             let card_width=window.getComputedStyle(next_card).width;
-            if(card_width!='0px'){
+            card_width=parseInt(card_width, 10); // 単位を外して10進数に
+            if(card_width>100){
                 stop_end();
 
                 let monitor=new MutationObserver(stop_end); // next_cardパネルを監視
