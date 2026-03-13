@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        1.5
+// @version        1.6
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -304,6 +304,7 @@ function main(){
                 player_wrap.style.width='100%';
                 video.style.display='block';
                 video.style.alignItems='';
+                video.style.justifyContent='';
                 video.style.padding='0';
                 video.style.backgroundColor='';
                 video_elem.style.height='100%';
@@ -316,6 +317,7 @@ function main(){
                 player_wrap.style.width=cut_size/1+34+'px';
                 video.style.display='flex';
                 video.style.alignItems='center';
+                video.style.justifyContent='center';
                 video.style.padding='16px';
                 video.style.backgroundColor='';
                 video_elem.style.height='fit-content';
@@ -328,6 +330,7 @@ function main(){
                 player_wrap.style.width=cut_size/1+34+'px';
                 video.style.display='flex';
                 video.style.alignItems='center';
+                video.style.justifyContent='center';
                 video.style.padding='16px';
                 video.style.backgroundColor='';
                 video_elem.style.height='fit-content';
@@ -340,13 +343,12 @@ function main(){
                 player_wrap.style.width=cut_size/1+34+'px';
                 video.style.display='flex';
                 video.style.alignItems='center';
+                video.style.justifyContent='center';
                 video.style.padding='16px';
                 video.style.backgroundColor='#fff';
                 video_elem.style.height='fit-content';
                 video_elem.style.width=cut_size+'px';
                 video_elem.style.outline='1px solid #000'; }}
-
-        //                video_elem.style.boxShadow='0 0 0 1px #000, 0 0 0 400px #fff'; }}
 
     } // cut_line()
 
