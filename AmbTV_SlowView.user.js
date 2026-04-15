@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        1.6
+// @version        1.7
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -32,7 +32,7 @@ function player_env(){
                 clearInterval(interval);
                 act=0;
                 reset(); }
-            let video=document.querySelector('.com-a-Video__video');
+            let video=document.querySelector('.com-vod-VODScreen__player');
             if(video){
                 clearInterval(interval);
                 act=1;
@@ -238,7 +238,7 @@ function main(){
 
 
         function video_size(player_wrap, cut_size){
-            let video_elem=player_wrap.querySelector('.com-a-Video__video-element');
+            let video_elem=player_wrap.querySelector('.com-vod-VODScreen__player video');
             player_wrap.style.width=cut_size/1+34+'px';
             video_elem.style.width=cut_size+'px'; }
 
@@ -293,8 +293,8 @@ function main(){
 
 
     function cut_line(player_wrap, cut){
-        let video=player_wrap.querySelector('.com-a-Video__video');
-        let video_elem=video.querySelector('.com-a-Video__video-element');
+        let video=player_wrap.querySelector('#fluffy-video-view');
+        let video_elem=video.querySelector('.com-vod-VODScreen__player video');
         let cutl=document.querySelector('#cutl');
         if(video && video_elem && cutl){
             if(cut==0){
@@ -356,7 +356,7 @@ function main(){
 
     function slow_play(n){
         let player_wrap=document.querySelector('.com-vod-VODMiniPlayerWrapper');
-        let video_elem=player_wrap.querySelector('.com-a-Video__video-element');
+        let video_elem=player_wrap.querySelector('.com-vod-VODScreen__player video');
         let PB=player_wrap.querySelector('.com-vod-VideoControlButton');
 
         if(video_elem && PB){
