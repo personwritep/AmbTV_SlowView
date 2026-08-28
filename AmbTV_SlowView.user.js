@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV SlowView
 // @namespace        http://tampermonkey.net/
-// @version        1.7
+// @version        1.8
 // @description        AbemaTV ユーティリティ
 // @author        Ameba User
 // @match        https://abema.tv/*
@@ -49,7 +49,7 @@ function player_env(){
                 event.stopImmediatePropagation();
                 act=2;
                 main(); }
-            if(event.keyCode==32 && is_end()){ //「Space」キーの押下
+            if(event.keyCode==32 && is_panel()){ //「Space」キーの押下
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 freeze(); }});
@@ -66,38 +66,31 @@ function player_env(){
             player_wrap.style.boxShadow=''; }}
 
 
-    function is_end(){
-        let next_card=document.querySelector('.com-pages-episode-NextContentCard__inner');
-        let recommend=document.querySelector('.com-pages-episode-FullScreenRecommend');
-        if(next_card){
-            let card_width=window.getComputedStyle(next_card).width;
+    function is_panel(){
+        let NC_Card=document.querySelector('.com-pages-episode-NextContentCard');
+        if(NC_Card){
+            let card_width=window.getComputedStyle(NC_Card).width;
             card_width=parseInt(card_width, 10); // 単位を外して10進数に
-            if(card_width>100 || recommend){
+            if(card_width>200){
                 return true; }}}
 
 
     function freeze(){
-        let next_card=document.querySelector('.com-pages-episode-NextContentCard__inner');
-        let cancel=document.querySelector('.com-pages-episode-NextContentCard__cancel-button');
-        if(next_card && cancel){
-            let card_width=window.getComputedStyle(next_card).width;
-            card_width=parseInt(card_width, 10); // 単位を外して10進数に
-            if(card_width>100){
-                stop_end();
+        let NC_Card=document.querySelector('.com-pages-episode-NextContentCard');
+        if(NC_Card){
+            let observer=new ResizeObserver(disable_panel);
+            observer.observe(NC_Card);
 
-                let monitor=new MutationObserver(stop_end); // next_cardパネルを監視
-                monitor.observe(next_card, { attributes: true }); } // 2回目のcancelを押す
-
-            function stop_end(){
-                next_card.style.visibility='hidden';
-                let recommend=document.querySelector('.com-pages-episode-FullScreenRecommend');
-                if(recommend){
-                    recommend.style.visibility='hidden'; }
-                setTimeout(()=>{
-                    cancel.click();
-                }, 20); }}
+            function disable_panel(){
+                NC_Card.style.visibility='hidden';
+                let cancel=NC_Card.querySelector('button[class*="cancel"]');
+                if(cancel){
+                    setTimeout(()=>{
+                        cancel.click();
+                    }, 20); }}}
 
     } // freeze()
+
 
 } // player_env()
 
